@@ -1,0 +1,4 @@
+.idea/
+*.iml
+out/production/ChatClient/com/company/Main$ClientReader.class
+out/production/ChatClient/com/company/Main.class
