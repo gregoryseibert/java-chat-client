@@ -1,10 +1,9 @@
 package com.company;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import javax.swing.*;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class ClientChat {
     private PrintWriter writer;
@@ -18,29 +17,27 @@ public class ClientChat {
 
     public void start() {
         clientGui = new ClientGui(this);
+
+        String serverAddress = JOptionPane.showInputDialog("Server IP address: ", "127.0.0.1");
+
         clientGui.show();
 
         try {
-            server = new Socket("127.0.0.1", 5555);
+            server = new Socket(serverAddress, 5555);
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(server.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(server.getInputStream(), StandardCharsets.UTF_8));
 
             clientReader = new ClientReader(this, reader);
             clientReader.start();
 
-            writer = new PrintWriter(server.getOutputStream());
+            writer = new PrintWriter(new OutputStreamWriter(server.getOutputStream(), StandardCharsets.UTF_8));
         } catch (Exception e) {
             e.printStackTrace();
             if(clientReader != null) {
                 clientReader.stopTask();
             }
+            clientGui.addTextToChatContent("An error occurred. Is the server running and accessable?");
         }
-    }
-
-    public void stop() {
-        //server.close();
-        //reader.close();
-        //writer.close();
     }
 
     public void sendMessage(String message) {
@@ -79,6 +76,7 @@ public class ClientChat {
                 } catch (IOException e) {
                     e.printStackTrace();
                     isRunning = false;
+                    clientChat.getClientGui().addTextToChatContent("An error occurred. Is the server running and accessable?\nPlease restart this client.");
                 }
             }
         }
