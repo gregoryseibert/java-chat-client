@@ -22,6 +22,7 @@
           <component id="636c5" class="javax.swing.JTextPane" binding="chatContent">
             <constraints/>
             <properties>
+              <contentType value="text/html"/>
               <editable value="false"/>
             </properties>
           </component>

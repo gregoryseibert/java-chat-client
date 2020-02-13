@@ -1,16 +1,22 @@
 package com.company;
 
 import javax.swing.*;
-import javax.swing.text.DefaultCaret;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+import java.io.IOException;
 
 public class ClientGui {
     private final ClientChat clientChat;
 
     private JPanel panel;
-    private JTextPane chatContent;
     private JTextField chatInput;
     private JButton buttonSend;
     private JScrollPane chatScrollPane;
+
+    private JTextPane chatContent;
+    private HTMLEditorKit editorKit;
+    private HTMLDocument document;
 
     public ClientGui(ClientChat clientChat) {
         this.clientChat = clientChat;
@@ -18,10 +24,15 @@ public class ClientGui {
         buttonSend.addActionListener(button -> sendMessage(chatInput.getText()));
 
         chatInput.addActionListener(input -> sendMessage(chatInput.getText()));
+
+        editorKit = new HTMLEditorKit();
+        document = new HTMLDocument();
+        chatContent.setEditorKit(editorKit);
+        chatContent.setDocument(document);
     }
 
     public void show() {
-        JFrame frame = new JFrame("Pure wa chat");
+        JFrame frame = new JFrame("Pure wa'a chat");
         frame.setContentPane(panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
@@ -35,12 +46,13 @@ public class ClientGui {
     }
 
     public void addTextToChatContent(String newContent) {
-        String existingText = chatContent.getText();
-        if(existingText.length() > 0) {
-            existingText += "\n";
-        }
+        System.out.println(newContent);
 
-        chatContent.setText(existingText + newContent);
+        try {
+            editorKit.insertHTML(document, document.getLength(), "<p style=\"margin-top: 0\">" + newContent + "</p>", 0, 0, null);
+        } catch (BadLocationException | IOException e) {
+            e.printStackTrace();
+        }
 
         chatContent.setCaretPosition(chatContent.getDocument().getLength());
     }
