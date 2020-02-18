@@ -7,15 +7,14 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 public class ClientChat {
+    private final String defaultIpAddress = "127.0.0.1";
     private PrintWriter writer;
     private ClientReader clientReader;
     private ClientGui clientGui;
     private Socket server;
-
     private TrayIcon trayIcon;
     private Image imageNeutral, imageAttention;
     private boolean imageIsNeutral;
-    private final String defaultIpAddress = "127.0.0.1";
 
     public ClientChat() {
         try {
@@ -42,18 +41,18 @@ public class ClientChat {
     }
 
     public void setTrayImageNeutral() {
-        if(!imageIsNeutral) {
+        if (!imageIsNeutral) {
             imageIsNeutral = true;
             trayIcon.setImage(imageNeutral);
         }
     }
 
     public void setTrayImageAttention() {
-        if(imageIsNeutral && !clientGui.isInFocus()) {
+        if (imageIsNeutral && !clientGui.isInFocus()) {
             imageIsNeutral = false;
             trayIcon.setImage(imageAttention);
 
-            if(clientGui.notificationSoundEnabled()) {
+            if (clientGui.notificationSoundEnabled()) {
                 Toolkit.getDefaultToolkit().beep();
             }
         }
@@ -77,7 +76,7 @@ public class ClientChat {
             writer = new PrintWriter(new OutputStreamWriter(server.getOutputStream(), StandardCharsets.UTF_8));
         } catch (Exception e) {
             e.printStackTrace();
-            if(clientReader != null) {
+            if (clientReader != null) {
                 clientReader.stopTask();
             }
             clientGui.addTextToChatContent("An error occurred. Is the server running and accessable?");
@@ -89,7 +88,7 @@ public class ClientChat {
     }
 
     public void sendMessage(String message) {
-        if(writer != null && message.length() > 0) {
+        if (writer != null && message.length() > 0) {
             writer.println(message);
             writer.flush();
         }
@@ -113,7 +112,7 @@ public class ClientChat {
 
         @Override
         public void run() {
-            while(isRunning) {
+            while (isRunning) {
                 try {
                     String input = reader.readLine();
                     if (input == null) {
