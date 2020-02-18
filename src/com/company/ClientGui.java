@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 public class ClientGui {
@@ -15,8 +17,11 @@ public class ClientGui {
     private JScrollPane chatScrollPane;
 
     private JTextPane chatContent;
+    private JCheckBox checkBoxNotificationSound;
     private HTMLEditorKit editorKit;
     private HTMLDocument document;
+
+    private boolean isInFocus;
 
     public ClientGui(ClientChat clientChat) {
         this.clientChat = clientChat;
@@ -25,6 +30,8 @@ public class ClientGui {
 
         chatInput.addActionListener(input -> sendMessage(chatInput.getText()));
 
+        //checkBoxNotificationSound.setSelected(true);
+
         editorKit = new HTMLEditorKit();
         document = new HTMLDocument();
         chatContent.setEditorKit(editorKit);
@@ -32,12 +39,36 @@ public class ClientGui {
     }
 
     public void show() {
-        JFrame frame = new JFrame("Pure wa'a chat");
+        JFrame frame = new JFrame("Pure Wa'a Chat");
         frame.setContentPane(panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.pack();
         frame.setVisible(true);
+
+        frame.addWindowFocusListener(new WindowAdapter() {
+            @Override
+            public void windowGainedFocus(WindowEvent e) {
+                super.windowGainedFocus(e);
+                isInFocus = true;
+                clientChat.setTrayImageNeutral();
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+                super.windowLostFocus(e);
+                isInFocus = false;
+                clientChat.setTrayImageNeutral();
+            }
+        });
+    }
+
+    public boolean isInFocus() {
+        return isInFocus;
+    }
+
+    public boolean notificationSoundEnabled() {
+        return checkBoxNotificationSound.isSelected();
     }
 
     private void sendMessage(String message) {
